@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { Prisma } from 'generated/prisma';
-import { LoginDto } from './dto';
+import { LoginDto, SignupDto } from './dto';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -23,8 +23,8 @@ export class AuthenticationController {
   }
 
   @Post('signup')
-  signup() {
-    return this.authenticationService.signup();
+  signup(@Body() signupDto: SignupDto) {
+    return this.authenticationService.signUp(signupDto);
   }
 
   @Get('users')

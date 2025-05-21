@@ -11,6 +11,7 @@ import { UserSerializer } from 'src/providers/serializers/user.serializer';
 import { LoginDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { SignupDto } from './dto/signup-dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -61,8 +62,32 @@ export class AuthenticationService {
     }
   }
 
-  signup() {
-    return 'Signup';
+  async signUp(signupDto: SignupDto): Promise<void> {
+    try {
+      const { email, password } = signupDto;
+
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (existingUser) {
+        throw new BadRequestException('User already exists');
+      }
+
+      const passwordHash = await bcrypt.hash(password, 10);
+
+      await this.prisma.user.create({
+        data: {
+          email,
+          password: passwordHash,
+        },
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException('User registration failed');
+    }
   }
 
   async createUser(user: User) {
