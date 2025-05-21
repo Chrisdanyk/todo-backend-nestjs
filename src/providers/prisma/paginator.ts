@@ -63,4 +63,4 @@ export const createPaginator = (defaultOptions: {
 };
 
 // Default paginator instance with 10 items per page
-export const paginate = createPaginator({ perPage: 10 });
+export const paginate = createPaginator({ perPage: 5 });

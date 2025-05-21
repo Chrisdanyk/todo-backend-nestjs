@@ -1,14 +1,25 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { Prisma } from 'generated/prisma';
+import { LoginDto } from './dto';
 
 @Controller('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) { }
 
   @Post('login')
-  login() {
-    return this.authenticationService.login();
+  login(@Body() loginDto: LoginDto) {
+    return this.authenticationService.login(loginDto);
   }
 
   @Post('signup')
