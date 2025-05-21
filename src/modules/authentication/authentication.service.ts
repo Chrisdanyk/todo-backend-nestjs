@@ -3,11 +3,8 @@ import { User, Prisma } from 'generated/prisma';
 import { PrismaService } from 'src/prisma.service';
 import {
   PaginatedResult,
-  PaginateFunction,
-  paginator,
+  paginate,
 } from 'src/providers/prisma/paginator';
-
-const paginate: PaginateFunction = paginator({ perPage: 10 });
 
 @Injectable()
 export class AuthenticationService {

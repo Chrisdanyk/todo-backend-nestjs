@@ -8,7 +8,6 @@ export type PaginateFunction = <T, K extends { where?: any; orderBy?: any }>(
 ) => Promise<PaginatedResult<T>>;
 
 export interface PaginatedResult<T> {
-  data: T[];
   meta: {
     total: number;
     lastPage: number;
@@ -17,9 +16,10 @@ export interface PaginatedResult<T> {
     prev: number | null;
     next: number | null;
   };
+  data: T[];
 }
 
-export const paginator = (defaultOptions: {
+export const createPaginator = (defaultOptions: {
   perPage: number;
 }): PaginateFunction => {
   return async <T, K extends { where?: any; orderBy?: any }>(
@@ -28,14 +28,16 @@ export const paginator = (defaultOptions: {
       findMany: (args: any) => Promise<T[]>;
     },
     args: K = {} as K,
-    options: { page?: number; perPage?: number } = {},
+    options: { page?: number; perPage?: number } = {
+      page: 1,
+      perPage: defaultOptions.perPage,
+    },
   ) => {
     const page = Number(options.page) || 1;
     const perPage = Number(options.perPage) || defaultOptions.perPage;
 
     const skip = page > 0 ? perPage * (page - 1) : 0;
     const [total, data] = await Promise.all([
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       model.count({ where: args.where }),
       model.findMany({
         ...args,
@@ -47,7 +49,6 @@ export const paginator = (defaultOptions: {
     const lastPage = Math.ceil(total / perPage);
 
     return {
-      data,
       meta: {
         total,
         lastPage,
@@ -56,6 +57,10 @@ export const paginator = (defaultOptions: {
         prev: page > 1 ? page - 1 : null,
         next: page < lastPage ? page + 1 : null,
       },
+      data,
     };
   };
 };
+
+// Default paginator instance with 10 items per page
+export const paginate = createPaginator({ perPage: 10 });
