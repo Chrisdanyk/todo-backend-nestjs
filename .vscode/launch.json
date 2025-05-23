@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Attach to NestJS",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "restart": true,
+            "protocol": "inspector",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/generated/prisma/runtime/**"
+            ],
+            "sourceMaps": true,
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**",
+                "!**/generated/prisma/runtime/**"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js"
+            ]
+        }
+    ]
+}

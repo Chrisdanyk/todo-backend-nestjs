@@ -58,7 +58,8 @@ export class AuthenticationService {
       ) {
         throw error;
       }
-      throw new UnauthorizedException('Authentication failed');
+      // throw new UnauthorizedException('Authentication failed');
+      throw error;
     }
   }
 
