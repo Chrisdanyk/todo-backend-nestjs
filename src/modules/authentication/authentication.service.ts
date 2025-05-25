@@ -8,10 +8,16 @@ import { User, Prisma } from 'generated/prisma';
 import { PrismaService } from 'src/prisma.service';
 import { PaginatedResult, paginate } from 'src/providers/prisma/paginator';
 import { UserSerializer } from 'src/providers/serializers/user.serializer';
-import { LoginDto } from './dto';
+import { LoginDto, RefreshTokenDto, AuthResponseDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup-dto';
+import { randomUUID } from 'crypto';
+
+interface JwtPayload {
+  id: string;
+  email: string;
+}
 
 @Injectable()
 export class AuthenticationService {
@@ -20,46 +26,114 @@ export class AuthenticationService {
     private readonly jwtService: JwtService,
   ) { }
 
-  async login(loginDto: LoginDto) {
+  private async createRefreshToken(userId: string, family: string): Promise<string> {
+    const token = randomUUID();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
+
+    await this.prisma.refreshToken.create({
+      data: {
+        token,
+        userId,
+        family,
+        expiresAt,
+      },
+    });
+
+    return token;
+  }
+
+  private async revokeRefreshTokenFamily(family: string): Promise<void> {
+    await this.prisma.refreshToken.updateMany({
+      where: { family },
+      data: { used: true },
+    });
+  }
+
+  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { email: loginDto.email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Invalid credentials');
+    }
+
+    const passwordMatch = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
+
+    if (!passwordMatch) {
+      throw new BadRequestException('Invalid credentials');
+    }
+
+    const payload: JwtPayload = {
+      id: user.id,
+      email: user.email,
+    };
+
+    const access_token = await this.jwtService.signAsync(payload, {
+      expiresIn: '1h',
+    });
+    const family = randomUUID();
+    const refresh_token = await this.createRefreshToken(user.id, family);
+
+    return new AuthResponseDto({
+      access_token,
+      refresh_token,
+      id: user.id,
+      email: user.email,
+    });
+  }
+
+  async refreshToken(refreshTokenDto: RefreshTokenDto): Promise<AuthResponseDto> {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { email: loginDto.email },
+      const storedToken = await this.prisma.refreshToken.findUnique({
+        where: { token: refreshTokenDto.refresh_token },
+        include: { user: true },
       });
 
-      if (!user) {
-        throw new NotFoundException('Invalid credentials');
+      if (!storedToken || storedToken.used || storedToken.expiresAt < new Date()) {
+        throw new UnauthorizedException('Invalid refresh token');
       }
 
-      const passwordMatch = await bcrypt.compare(
-        loginDto.password,
-        user.password,
-      );
+      // Mark the current token as used
+      await this.prisma.refreshToken.update({
+        where: { id: storedToken.id },
+        data: { used: true },
+      });
 
-      if (!passwordMatch) {
-        throw new BadRequestException('Invalid credentials');
-      }
+      // Revoke all tokens in the same family
+      await this.revokeRefreshTokenFamily(storedToken.family);
 
-      const payload = {
-        id: user.id,
-        email: user.email,
+      const payload: JwtPayload = {
+        id: storedToken.user.id,
+        email: storedToken.user.email,
       };
 
-      const access_token = await this.jwtService.signAsync(payload);
+      const access_token = await this.jwtService.signAsync(payload, { expiresIn: '1h' });
+      const family = randomUUID();
+      const refresh_token = await this.createRefreshToken(storedToken.user.id, family);
 
-      return {
+      return new AuthResponseDto({
         access_token,
-        id: user.id,
-        email: user.email,
-      };
-    } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-      // throw new UnauthorizedException('Authentication failed');
-      throw error;
+        refresh_token,
+        id: storedToken.user.id,
+        email: storedToken.user.email,
+      });
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  async logout(refreshToken: string): Promise<void> {
+    const storedToken = await this.prisma.refreshToken.findUnique({
+      where: { token: refreshToken },
+    });
+
+    if (storedToken) {
+      await this.revokeRefreshTokenFamily(storedToken.family);
     }
   }
 

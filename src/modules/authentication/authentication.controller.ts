@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpCode,
   Param,
   Post,
   Query,
@@ -10,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { Prisma } from 'generated/prisma';
-import { LoginDto, SignupDto } from './dto';
+import { LoginDto, SignupDto, RefreshTokenDto } from './dto';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -18,8 +19,21 @@ export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) { }
 
   @Post('login')
+  @HttpCode(200)
   login(@Body() loginDto: LoginDto) {
     return this.authenticationService.login(loginDto);
+  }
+
+  @Post('refresh')
+  @HttpCode(200)
+  refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authenticationService.refreshToken(refreshTokenDto);
+  }
+
+  @Post('logout')
+  @HttpCode(200)
+  logout(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authenticationService.logout(refreshTokenDto.refresh_token);
   }
 
   @Post('signup')

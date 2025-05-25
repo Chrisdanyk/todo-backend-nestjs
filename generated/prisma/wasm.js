@@ -137,6 +137,17 @@ exports.Prisma.TodoScalarFieldEnum = {
   userId: 'userId'
 };
 
+exports.Prisma.RefreshTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  userId: 'userId',
+  family: 'family',
+  used: 'used',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -150,7 +161,8 @@ exports.Prisma.QueryMode = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Todo: 'Todo'
+  Todo: 'Todo',
+  RefreshToken: 'RefreshToken'
 };
 
 /**
