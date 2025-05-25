@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
 import { PrismaService } from './prisma.service';
 import { ConfigModule } from '@nestjs/config';
+import { TodoModule } from './modules/todo/todo.module';
+import { TodoModule } from './modules/todo/todo.module';
 import jwtConfig from './config/jwt.config';
 
 @Module({
@@ -14,6 +16,7 @@ import jwtConfig from './config/jwt.config';
       envFilePath: '.env',
     }),
     AuthenticationModule,
+    TodoModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
