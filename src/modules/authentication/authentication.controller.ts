@@ -6,6 +6,7 @@ import {
   HttpCode,
   Param,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -13,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { Prisma, User } from 'generated/prisma';
-import { LoginDto, SignupDto, RefreshTokenDto } from './dto';
+import { LoginDto, SignupDto, RefreshTokenDto, UpdateMeDto } from './dto';
 import { AuthGuard } from './guards';
 
 @Controller('auth')
@@ -44,13 +45,27 @@ export class AuthenticationController {
     return this.authenticationService.signUp(signupDto);
   }
 
-  @UseGuards(AuthGuard)
   @Get('me')
+  @UseGuards(AuthGuard)
   async me(@Req() req: { user: { id: string } }) {
     return await this.authenticationService.me(req.user.id);
   }
 
+  @Put('me')
+  @UseGuards(AuthGuard)
+  async updateMe(
+    @Body() updateMeDto: UpdateMeDto,
+    @Req() req: { user: { id: string } },
+  ) {
+    const user = await this.authenticationService.getUser(req.user.id);
+    return await this.authenticationService.updateUser(req.user.id, {
+      ...user,
+      name: updateMeDto.name ?? user.name,
+    });
+  }
+
   @Get('users')
+  @UseGuards(AuthGuard)
   async listUsers(
     @Query('page') page?: number,
     @Query('where') where?: Prisma.UserWhereInput,
@@ -64,6 +79,7 @@ export class AuthenticationController {
   }
 
   @Get('users/:id')
+  @UseGuards(AuthGuard)
   async getUser(@Param('id') id: string) {
     return await this.authenticationService.getUser(id);
   }

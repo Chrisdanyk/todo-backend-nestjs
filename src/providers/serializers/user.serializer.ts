@@ -5,6 +5,9 @@ export class UserSerializer {
   id: string;
 
   @Expose()
+  name: string;
+
+  @Expose()
   email: string;
 
   @Exclude()
