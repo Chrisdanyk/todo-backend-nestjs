@@ -87,14 +87,20 @@ export class AuthenticationService {
     });
   }
 
-  async refreshToken(refreshTokenDto: RefreshTokenDto): Promise<AuthResponseDto> {
+  async refreshToken(
+    refreshTokenDto: RefreshTokenDto,
+  ): Promise<AuthResponseDto> {
     try {
       const storedToken = await this.prisma.refreshToken.findUnique({
         where: { token: refreshTokenDto.refresh_token },
         include: { user: true },
       });
 
-      if (!storedToken || storedToken.used || storedToken.expiresAt < new Date()) {
+      if (
+        !storedToken ||
+        storedToken.used ||
+        storedToken.expiresAt < new Date()
+      ) {
         throw new UnauthorizedException('Invalid refresh token');
       }
 
@@ -112,9 +118,14 @@ export class AuthenticationService {
         email: storedToken.user.email,
       };
 
-      const access_token = await this.jwtService.signAsync(payload, { expiresIn: '1h' });
+      const access_token = await this.jwtService.signAsync(payload, {
+        expiresIn: '1h',
+      });
       const family = randomUUID();
-      const refresh_token = await this.createRefreshToken(storedToken.user.id, family);
+      const refresh_token = await this.createRefreshToken(
+        storedToken.user.id,
+        family,
+      );
 
       return new AuthResponseDto({
         access_token,

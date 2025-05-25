@@ -5,7 +5,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -16,10 +15,15 @@ import {
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { Prisma, User } from 'generated/prisma';
-import { LoginDto, SignupDto, RefreshTokenDto, UpdateMeDto, UpdateUserDto } from './dto';
-import { AuthGuard } from './guards';
+import {
+  LoginDto,
+  SignupDto,
+  RefreshTokenDto,
+  UpdateMeDto,
+  UpdateUserDto,
+} from './dto';
 import { UserSerializer } from 'src/providers/serializers/user.serializer';
-import { AdminGuard } from './guards/admin.guard';
+import { AdminGuard, AuthGuard } from './guards';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
