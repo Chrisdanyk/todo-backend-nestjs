@@ -233,7 +233,7 @@ export class AuthenticationService {
 
     return {
       ...paginatedResult,
-      data: paginatedResult.data.map((user) => new UserSerializer(user)),
+      data: paginatedResult.data.map((user) => new UserSerializer(user as any)),
     };
   }
 
@@ -246,7 +246,7 @@ export class AuthenticationService {
       throw new NotFoundException('User not found');
     }
 
-    return new UserSerializer(user);
+    return new UserSerializer(user as any);
   }
 
   async me(id: string) {
@@ -257,6 +257,6 @@ export class AuthenticationService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return new UserSerializer(user);
+    return new UserSerializer(user as any);
   }
 }

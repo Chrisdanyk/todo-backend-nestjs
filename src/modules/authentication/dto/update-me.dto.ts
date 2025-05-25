@@ -4,4 +4,4 @@ export class UpdateMeDto {
   @IsOptional()
   @IsString()
   name?: string;
-} 
+}

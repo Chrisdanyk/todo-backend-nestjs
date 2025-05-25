@@ -13,9 +13,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
-import { Prisma, User } from 'generated/prisma';
+import { Prisma } from 'generated/prisma';
 import { LoginDto, SignupDto, RefreshTokenDto, UpdateMeDto } from './dto';
 import { AuthGuard } from './guards';
+import { UserSerializer } from 'src/providers/serializers/user.serializer';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -57,11 +58,12 @@ export class AuthenticationController {
     @Body() updateMeDto: UpdateMeDto,
     @Req() req: { user: { id: string } },
   ) {
-    const user = await this.authenticationService.getUser(req.user.id);
-    return await this.authenticationService.updateUser(req.user.id, {
-      ...user,
-      name: updateMeDto.name ?? user.name,
+    const existingUser = await this.authenticationService.getUser(req.user.id);
+    const user = await this.authenticationService.updateUser(req.user.id, {
+      ...existingUser,
+      name: updateMeDto.name || null,
     });
+    return new UserSerializer(user as any);
   }
 
   @Get('users')
