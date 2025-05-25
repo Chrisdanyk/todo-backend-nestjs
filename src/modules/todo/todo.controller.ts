@@ -1,15 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  UseGuards,
+  Req,
+  HttpCode,
+  ForbiddenException,
+} from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { AuthGuard } from '../authentication/guards';
 
 @Controller('todos')
+@UseGuards(AuthGuard)
 export class TodoController {
   constructor(private readonly todoService: TodoService) { }
 
   @Post()
-  create(@Body() createTodoDto: CreateTodoDto) {
-    return this.todoService.create(createTodoDto);
+  create(
+    @Body() createTodoDto: CreateTodoDto,
+    @Req() req: { user: { id: string } },
+  ) {
+    return this.todoService.create({ ...createTodoDto, userId: req.user.id });
   }
 
   @Get()
@@ -18,17 +35,25 @@ export class TodoController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.todoService.findOne(+id);
+  async findOne(@Param('id') id: string, @Req() req: { user: { id: string } }) {
+    const todo = await this.todoService.findOne(id);
+    if (todo.userId !== req.user.id) {
+      throw new ForbiddenException('You are not allowed to access this todo');
+    }
+    return todo;
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto) {
-    return this.todoService.update(+id, updateTodoDto);
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updateTodoDto: UpdateTodoDto) {
+    const todo = await this.todoService.findOne(id);
+    return this.todoService.update(todo.id, updateTodoDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.todoService.remove(+id);
+  @HttpCode(204)
+  async remove(@Param('id') id: string) {
+    const todo = await this.todoService.findOne(id);
+    await this.todoService.remove(todo.id);
+    return null;
   }
 }

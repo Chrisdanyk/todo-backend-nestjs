@@ -1,11 +1,21 @@
-import { IsString } from "class-validator";
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateTodoDto {
-  id        String   @id @default(uuid())
-  title     String
-  completed Boolean @default (false)
-  createdAt DateTime @default (now())
-  updatedAt DateTime @updatedAt
-  userId    String
-  user      User @relation(fields: [userId], references: [id])
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsBoolean()
+  @IsOptional()
+  completed?: boolean = false;
+
+  @IsUUID()
+  @IsNotEmpty()
+  userId: string;
 }
