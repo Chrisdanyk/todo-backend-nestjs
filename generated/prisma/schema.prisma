@@ -14,6 +14,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id            String         @id @default(uuid())
   email         String         @unique
@@ -23,6 +28,7 @@ model User {
   updatedAt     DateTime       @updatedAt
   todos         Todo[]
   refreshTokens RefreshToken[]
+  role          Role           @default(USER)
 }
 
 model Todo {

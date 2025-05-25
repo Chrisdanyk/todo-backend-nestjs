@@ -2,8 +2,10 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -13,10 +15,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
-import { Prisma } from 'generated/prisma';
-import { LoginDto, SignupDto, RefreshTokenDto, UpdateMeDto } from './dto';
+import { Prisma, User } from 'generated/prisma';
+import { LoginDto, SignupDto, RefreshTokenDto, UpdateMeDto, UpdateUserDto } from './dto';
 import { AuthGuard } from './guards';
 import { UserSerializer } from 'src/providers/serializers/user.serializer';
+import { AdminGuard } from './guards/admin.guard';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -61,13 +64,13 @@ export class AuthenticationController {
     const existingUser = await this.authenticationService.getUser(req.user.id);
     const user = await this.authenticationService.updateUser(req.user.id, {
       ...existingUser,
-      name: updateMeDto.name || null,
-    });
+      name: updateMeDto.name,
+    } as User);
     return new UserSerializer(user as any);
   }
 
   @Get('users')
-  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
   async listUsers(
     @Query('page') page?: number,
     @Query('where') where?: Prisma.UserWhereInput,
@@ -81,8 +84,27 @@ export class AuthenticationController {
   }
 
   @Get('users/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AdminGuard)
   async getUser(@Param('id') id: string) {
     return await this.authenticationService.getUser(id);
+  }
+
+  @Put('users/:id')
+  @UseGuards(AdminGuard)
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.authenticationService.updateUser(id, {
+      ...updateUserDto,
+    } as User);
+  }
+
+  @Delete('users/:id')
+  @UseGuards(AdminGuard)
+  @HttpCode(204)
+  async deleteUser(@Param('id') id: string) {
+    await this.authenticationService.deleteUser(id);
+    return null;
   }
 }

@@ -14,6 +14,9 @@ export class UserSerializer {
   password: string;
 
   @Expose()
+  role: 'ADMIN' | 'USER';
+
+  @Expose()
   createdAt: Date;
 
   @Expose()
