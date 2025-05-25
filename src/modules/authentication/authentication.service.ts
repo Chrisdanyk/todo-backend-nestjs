@@ -248,4 +248,15 @@ export class AuthenticationService {
 
     return new UserSerializer(user);
   }
+
+  async me(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return new UserSerializer(user);
+  }
 }

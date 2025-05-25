@@ -7,11 +7,14 @@ import {
   Param,
   Post,
   Query,
+  Req,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
-import { Prisma } from 'generated/prisma';
+import { Prisma, User } from 'generated/prisma';
 import { LoginDto, SignupDto, RefreshTokenDto } from './dto';
+import { AuthGuard } from './guards';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -39,6 +42,12 @@ export class AuthenticationController {
   @Post('signup')
   signup(@Body() signupDto: SignupDto) {
     return this.authenticationService.signUp(signupDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('me')
+  async me(@Req() req: { user: { id: string } }) {
+    return await this.authenticationService.me(req.user.id);
   }
 
   @Get('users')
