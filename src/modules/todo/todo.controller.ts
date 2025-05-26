@@ -19,7 +19,7 @@ import { UpdateTodoDto } from './dto';
 import { Prisma } from 'generated/prisma';
 
 @Controller('todos')
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class TodoController {
   constructor(private readonly todoService: TodoService) { }
 
