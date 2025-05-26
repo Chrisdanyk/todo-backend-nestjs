@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { PrismaService } from '../../prisma.service';
+import { Prisma, Todo } from 'generated/prisma';
+import { paginate, PaginatedResult } from 'src/providers/prisma/paginator';
 
 @Injectable()
 export class TodoService {
@@ -13,8 +15,33 @@ export class TodoService {
     });
   }
 
-  async findAll() {
-    return await this.prisma.todo.findMany()
+  async findAll(params?: {
+    where?: Prisma.TodoWhereInput;
+    orderBy?: Prisma.TodoOrderByWithRelationInput;
+    page?: number;
+  }): Promise<Todo[] | PaginatedResult<Todo>> {
+    if (!params?.page) {
+      return await this.prisma.todo.findMany({
+        where: params?.where,
+        orderBy: params?.orderBy,
+      })
+    }
+
+    const paginatedResult = await paginate(
+      this.prisma.todo,
+      {
+        where: params.where,
+        orderBy: params.orderBy,
+      },
+      {
+        page: params.page,
+      },
+    );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data,
+    };
   }
 
   async findOne(id: string) {

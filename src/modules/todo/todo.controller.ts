@@ -10,11 +10,13 @@ import {
   Req,
   HttpCode,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { AuthGuard } from '../authentication/guards';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto';
+import { Prisma } from 'generated/prisma';
 
 @Controller('todos')
 // @UseGuards(AuthGuard)
@@ -30,8 +32,16 @@ export class TodoController {
   }
 
   @Get()
-  findAll() {
-    return this.todoService.findAll();
+  findAll(
+    @Query('page') page?: number,
+    @Query('where') where?: Prisma.TodoWhereInput,
+    @Query('orderBy') orderBy?: Prisma.TodoOrderByWithRelationInput,
+  ) {
+    return this.todoService.findAll({
+      page: page ? Number(page) : 1,
+      where,
+      orderBy,
+    });
   }
 
   @Get(':id')
