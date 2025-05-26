@@ -17,7 +17,7 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto';
 
 @Controller('todos')
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard)
 export class TodoController {
   constructor(private readonly todoService: TodoService) { }
 
