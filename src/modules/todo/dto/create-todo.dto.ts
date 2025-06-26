@@ -15,7 +15,7 @@ export class CreateTodoDto {
   @IsOptional()
   completed?: boolean = false;
 
-  @IsUUID()
+  @IsUUID('4')
   @IsNotEmpty()
   userId: string;
 }

@@ -9,7 +9,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
 interface JwtPayload {
-  id: number;
+  id: string;
+  email: string;
 }
 
 @Injectable()

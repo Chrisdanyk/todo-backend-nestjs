@@ -17,6 +17,7 @@ import { randomUUID } from 'crypto';
 interface JwtPayload {
   id: string;
   email: string;
+  role: string;
 }
 
 @Injectable()
@@ -71,6 +72,7 @@ export class AuthenticationService {
     const payload: JwtPayload = {
       id: user.id,
       email: user.email,
+      role: user.role,
     };
 
     const access_token = await this.jwtService.signAsync(payload, {
@@ -116,6 +118,7 @@ export class AuthenticationService {
       const payload: JwtPayload = {
         id: storedToken.user.id,
         email: storedToken.user.email,
+        role: storedToken.user.role,
       };
 
       const access_token = await this.jwtService.signAsync(payload, {

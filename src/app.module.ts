@@ -19,8 +19,12 @@ import { APP_GUARD } from '@nestjs/core';
     ThrottlerModule.forRoot({
       throttlers: [
         {
-          ttl: 60000,
-          limit: 10,
+          ttl: 60000, // 1 minute
+          limit: 100, // 100 requests per minute
+        },
+        {
+          ttl: 3600000, // 1 hour
+          limit: 1000, // 1000 requests per hour
         },
       ],
     }),
@@ -31,10 +35,11 @@ import { APP_GUARD } from '@nestjs/core';
   providers: [
     AppService,
     PrismaService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // Temporarily disable throttling for debugging
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
 })
 export class AppModule { }

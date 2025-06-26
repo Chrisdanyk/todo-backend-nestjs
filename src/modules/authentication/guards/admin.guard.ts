@@ -11,7 +11,8 @@ import { Request } from 'express';
 import { Role } from 'generated/prisma';
 
 interface JwtPayload {
-  id: number;
+  id: string;
+  email: string;
   role: Role;
 }
 

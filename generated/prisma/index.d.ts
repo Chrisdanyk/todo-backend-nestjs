@@ -2237,14 +2237,26 @@ export namespace Prisma {
 
   export type AggregateTodo = {
     _count: TodoCountAggregateOutputType | null
+    _avg: TodoAvgAggregateOutputType | null
+    _sum: TodoSumAggregateOutputType | null
     _min: TodoMinAggregateOutputType | null
     _max: TodoMaxAggregateOutputType | null
+  }
+
+  export type TodoAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type TodoSumAggregateOutputType = {
+    order: number | null
   }
 
   export type TodoMinAggregateOutputType = {
     id: string | null
     title: string | null
     completed: boolean | null
+    description: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -2254,6 +2266,8 @@ export namespace Prisma {
     id: string | null
     title: string | null
     completed: boolean | null
+    description: string | null
+    order: number | null
     createdAt: Date | null
     updatedAt: Date | null
     userId: string | null
@@ -2263,6 +2277,8 @@ export namespace Prisma {
     id: number
     title: number
     completed: number
+    description: number
+    order: number
     createdAt: number
     updatedAt: number
     userId: number
@@ -2270,10 +2286,20 @@ export namespace Prisma {
   }
 
 
+  export type TodoAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type TodoSumAggregateInputType = {
+    order?: true
+  }
+
   export type TodoMinAggregateInputType = {
     id?: true
     title?: true
     completed?: true
+    description?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -2283,6 +2309,8 @@ export namespace Prisma {
     id?: true
     title?: true
     completed?: true
+    description?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -2292,6 +2320,8 @@ export namespace Prisma {
     id?: true
     title?: true
     completed?: true
+    description?: true
+    order?: true
     createdAt?: true
     updatedAt?: true
     userId?: true
@@ -2336,6 +2366,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TodoAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TodoSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TodoMinAggregateInputType
@@ -2366,6 +2408,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TodoCountAggregateInputType | true
+    _avg?: TodoAvgAggregateInputType
+    _sum?: TodoSumAggregateInputType
     _min?: TodoMinAggregateInputType
     _max?: TodoMaxAggregateInputType
   }
@@ -2374,10 +2418,14 @@ export namespace Prisma {
     id: string
     title: string
     completed: boolean
+    description: string | null
+    order: number
     createdAt: Date
     updatedAt: Date
     userId: string
     _count: TodoCountAggregateOutputType | null
+    _avg: TodoAvgAggregateOutputType | null
+    _sum: TodoSumAggregateOutputType | null
     _min: TodoMinAggregateOutputType | null
     _max: TodoMaxAggregateOutputType | null
   }
@@ -2400,6 +2448,8 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     completed?: boolean
+    description?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -2410,6 +2460,8 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     completed?: boolean
+    description?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -2420,6 +2472,8 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     completed?: boolean
+    description?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
@@ -2430,12 +2484,14 @@ export namespace Prisma {
     id?: boolean
     title?: boolean
     completed?: boolean
+    description?: boolean
+    order?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
   }
 
-  export type TodoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "completed" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["todo"]>
+  export type TodoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "completed" | "description" | "order" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["todo"]>
   export type TodoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -2455,6 +2511,8 @@ export namespace Prisma {
       id: string
       title: string
       completed: boolean
+      description: string | null
+      order: number
       createdAt: Date
       updatedAt: Date
       userId: string
@@ -2885,6 +2943,8 @@ export namespace Prisma {
     readonly id: FieldRef<"Todo", 'String'>
     readonly title: FieldRef<"Todo", 'String'>
     readonly completed: FieldRef<"Todo", 'Boolean'>
+    readonly description: FieldRef<"Todo", 'String'>
+    readonly order: FieldRef<"Todo", 'Int'>
     readonly createdAt: FieldRef<"Todo", 'DateTime'>
     readonly updatedAt: FieldRef<"Todo", 'DateTime'>
     readonly userId: FieldRef<"Todo", 'String'>
@@ -4430,6 +4490,8 @@ export namespace Prisma {
     id: 'id',
     title: 'title',
     completed: 'completed',
+    description: 'description',
+    order: 'order',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     userId: 'userId'
@@ -4542,6 +4604,20 @@ export namespace Prisma {
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
   /**
    * Deep Input Types
    */
@@ -4622,6 +4698,8 @@ export namespace Prisma {
     id?: StringFilter<"Todo"> | string
     title?: StringFilter<"Todo"> | string
     completed?: BoolFilter<"Todo"> | boolean
+    description?: StringNullableFilter<"Todo"> | string | null
+    order?: IntFilter<"Todo"> | number
     createdAt?: DateTimeFilter<"Todo"> | Date | string
     updatedAt?: DateTimeFilter<"Todo"> | Date | string
     userId?: StringFilter<"Todo"> | string
@@ -4632,6 +4710,8 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     completed?: SortOrder
+    description?: SortOrderInput | SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -4645,6 +4725,8 @@ export namespace Prisma {
     NOT?: TodoWhereInput | TodoWhereInput[]
     title?: StringFilter<"Todo"> | string
     completed?: BoolFilter<"Todo"> | boolean
+    description?: StringNullableFilter<"Todo"> | string | null
+    order?: IntFilter<"Todo"> | number
     createdAt?: DateTimeFilter<"Todo"> | Date | string
     updatedAt?: DateTimeFilter<"Todo"> | Date | string
     userId?: StringFilter<"Todo"> | string
@@ -4655,12 +4737,16 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     completed?: SortOrder
+    description?: SortOrderInput | SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
     _count?: TodoCountOrderByAggregateInput
+    _avg?: TodoAvgOrderByAggregateInput
     _max?: TodoMaxOrderByAggregateInput
     _min?: TodoMinOrderByAggregateInput
+    _sum?: TodoSumOrderByAggregateInput
   }
 
   export type TodoScalarWhereWithAggregatesInput = {
@@ -4670,6 +4756,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Todo"> | string
     title?: StringWithAggregatesFilter<"Todo"> | string
     completed?: BoolWithAggregatesFilter<"Todo"> | boolean
+    description?: StringNullableWithAggregatesFilter<"Todo"> | string | null
+    order?: IntWithAggregatesFilter<"Todo"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Todo"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Todo"> | Date | string
     userId?: StringWithAggregatesFilter<"Todo"> | string
@@ -4827,6 +4915,8 @@ export namespace Prisma {
     id?: string
     title: string
     completed?: boolean
+    description?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutTodosInput
@@ -4836,6 +4926,8 @@ export namespace Prisma {
     id?: string
     title: string
     completed?: boolean
+    description?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -4845,6 +4937,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutTodosNestedInput
@@ -4854,6 +4948,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -4863,6 +4959,8 @@ export namespace Prisma {
     id?: string
     title: string
     completed?: boolean
+    description?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
@@ -4872,6 +4970,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4880,6 +4980,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
@@ -5129,6 +5231,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -5138,15 +5251,23 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     completed?: SortOrder
+    description?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+  }
+
+  export type TodoAvgOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type TodoMaxOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
     completed?: SortOrder
+    description?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
@@ -5156,9 +5277,15 @@ export namespace Prisma {
     id?: SortOrder
     title?: SortOrder
     completed?: SortOrder
+    description?: SortOrder
+    order?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+  }
+
+  export type TodoSumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -5167,6 +5294,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type RefreshTokenCountOrderByAggregateInput = {
@@ -5310,6 +5453,14 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type UserUpdateOneRequiredWithoutTodosNestedInput = {
@@ -5473,10 +5624,39 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
   export type TodoCreateWithoutUserInput = {
     id?: string
     title: string
     completed?: boolean
+    description?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5485,6 +5665,8 @@ export namespace Prisma {
     id?: string
     title: string
     completed?: boolean
+    description?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5552,6 +5734,8 @@ export namespace Prisma {
     id?: StringFilter<"Todo"> | string
     title?: StringFilter<"Todo"> | string
     completed?: BoolFilter<"Todo"> | boolean
+    description?: StringNullableFilter<"Todo"> | string | null
+    order?: IntFilter<"Todo"> | number
     createdAt?: DateTimeFilter<"Todo"> | Date | string
     updatedAt?: DateTimeFilter<"Todo"> | Date | string
     userId?: StringFilter<"Todo"> | string
@@ -5711,6 +5895,8 @@ export namespace Prisma {
     id?: string
     title: string
     completed?: boolean
+    description?: string | null
+    order?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5729,6 +5915,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5737,6 +5925,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5745,6 +5935,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
