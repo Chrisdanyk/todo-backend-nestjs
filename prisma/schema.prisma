@@ -32,13 +32,14 @@ model User {
 }
 
 model Todo {
-  id        String   @id @default(uuid())
-  title     String
-  completed Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  id          String   @id @default(uuid())
+  title       String
+  completed   Boolean  @default(false)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model RefreshToken {
